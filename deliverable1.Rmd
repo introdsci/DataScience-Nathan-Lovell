@@ -1,0 +1,50 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+Start of the Project 
+install packages
+
+```{r}
+
+```
+
+
+rename columns
+```{r}
+
+```
+
+
+create additional tables as needed
+
+```{r}
+
+```
+
+
+parse time
+
+```{r}
+
+```
+
+
+columns to factors
+
+```{r}
+
+```
+
+
+visualizations and connections
+
+```{r}
+
+```
+
+
+
