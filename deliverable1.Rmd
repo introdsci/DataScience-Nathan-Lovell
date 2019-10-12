@@ -11,7 +11,7 @@ output:
   The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one catagory of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations.  
   In short, I have reduced the observations my project will look at from over 200,000 down to a managable 5,000 reviews for 435 different camera products (This file is hosted as a CSV on my github). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insite as to why Amazon is so popular.  
   
-***
+
 
 ##### **Potential Limitations**
 * Little customer informaiton  
@@ -85,16 +85,15 @@ colnames(Amazon_Ratings)
 7. **verified_purchase**  
   + Character: Whether the customer bought the item or not (Y/N)
   
-  
+***  
 #### **Organization**
   
-***
   
 Now that we have a good understanding of what this dataset contains, it is time to organize the data. I will be splitting the dataset into two tables; Review and Product.  
 Review will store all customer and review information. There will be no information about what product is being reviews other than its unique identifier.  
-The Product table will then store all information about the product based on its product_id. If we need information reguarding the product, we can look it up by its id and pull everything we need to know.  
 
-```{r}
+
+```{r echo=FALSE}
 Review <- tibble(
 review_id=Amazon_Ratings$review_id, customer_id=Amazon_Ratings$customer_id, 
 product_id=Amazon_Ratings$product_id, star_rating=Amazon_Ratings$star_rating,
@@ -106,9 +105,9 @@ review_date=Amazon_Ratings$review_date)
 colnames(Review)
 ```
   
-***
+The Product table will then store all information about the product based on its product_id. If we need information reguarding the product, we can look it up by its id and pull everything we need to know.  
   
-```{r}
+```{r echo=FALSE}
 Product <- tibble(
 product_id=Amazon_Ratings$product_id, parent_id=Amazon_Ratings$product_parent, 
 description=Amazon_Ratings$product_title, category=Amazon_Ratings$product_category)
@@ -116,25 +115,74 @@ description=Amazon_Ratings$product_title, category=Amazon_Ratings$product_catego
 colnames(Product)
 ```
 
-remove duplicate products based on product id
+Since Product is no longer directly linked to Review, we have multiple listings of the same products. We can remove this redundant information which drops this table from 5,000 entries to 435.  
 
 ```{r}
 Product <- distinct(Product, Product$product_id, .keep_all = TRUE)
 ```
+  
 
-
-columns to factors
-
-```{r}
-
-```
-
-
-visualizations and connections
+  
+Some of this data is categorical which means each possible response for a given variable can be grouped together. A good example is Review's star_rating. This variable is ranked on a scale between 1 and 5. Therefore we can say that this variable will have 5 levels (1,2,3,4,5) and each response MUST be one of those. This step will help with data manipulation later on.
 
 ```{r}
-
+Review$star_rating <- as.factor(Review$star_rating)
+Review$vine_verified <- as.factor(Review$vine_verified)
+Review$verified_purchase <- as.factor(Review$verified_purchase)
 ```
 
+***
+### Possible Insights
 
+Now that the data is Tidy and has been prepared for manipulations, it is time to investigate what our data can tell us. It is important to know what questions our data will be able to answer and which ones it will not.
+
+#### **Summary of Data**
+***
+
+One question this data might be able to answer is if having bought the product impacts wheather someone is more likely to give a lower rating.  
+  
+Out of all the 1 star ratings:
+```{r}
+sum(Review$star_rating == "1")
+```
+This many 1 star ratings were given by non-purchasers:
+```{r}
+sum((Review$star_rating == "1") & (Review$verified_purchase == "N"))
+```
+While purchasers gave this many 1 star ratings:
+```{r}
+sum((Review$star_rating == "1") & (Review$verified_purchase == "Y"))
+```
+
+Another question we can ask is wheather a Vine reviewer is more likely to give a higher rating.
+  
+Out of all the 5 star ratings:
+```{r}
+sum(Review$star_rating == "5")
+```
+This many 5 star ratings were given by non-vine reviewers:
+```{r}
+sum((Review$star_rating == "5") & (Review$vine_verified == "N"))
+```
+While vine reviewers gave this many 5 star ratings:
+```{r}
+sum((Review$star_rating == "5") & (Review$vine_verified == "Y"))
+```
+
+While these numbers start to answer our questions, they should not be taken at face value. The differences between verified purchasers and non is quite large.
+```{r}
+sum(Review$verified_purchase == "Y")
+sum(Review$verified_purchase == "N")
+```
+And these are even larger.
+```{r}
+sum(Review$vine_verified == "Y")
+sum(Review$vine_verified == "N")
+```
+
+This problem can be fixed by using presentages and looking across different ratings but it is important to keep in mind that it is easy to skew data with weighted questions. If instead we had just asked which gave more 1 star reviews, purchasers or non-purchasers, we would have gotten our answer right away. Without looking at the bigger picture however, we cannot see why the answers came out as they did. This is what we must keep in mind while asking research questions.
+
+#### **Research Questions**
+
+***
 
