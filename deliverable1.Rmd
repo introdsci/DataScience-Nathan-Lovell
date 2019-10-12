@@ -1,17 +1,34 @@
 ---
-title: "R Notebook"
+title: "Amazon Camera Reviews"
 output:
   html_document:
     df_print: paged
 ---
 
+***
 
-## Data Discovery
-  The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one catagory of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations. This boils down to 5000 reviews for 435 different camera products (This file is hosted as a CSV on my github). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insite as to why Amazon is so popular.
+### Data Discovery
+  The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one catagory of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations.  
+  In short, I have reduced the observations my project will look at from over 200,000 down to a managable 5,000 reviews for 435 different camera products (This file is hosted as a CSV on my github). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insite as to why Amazon is so popular.  
   
-## Data Preparation
-Start of the Project 
-install packages
+***
+
+##### **Potential Limitations**
+* Little customer informaiton  
+  + No information on age, sex, or other demographic information
+  + While country is all in the US, no states or cities are listed
+* Reviews are at customer descression
+  + Reviews could be negaive/positive for reasons not stated
+  + Do not know how many reviews each customer has given
+* Do not know if customer used Prime or not
+* Do not know if purchased as a gift or for personal use
+  + Also do not know if product was returned or kept
+
+***
+
+### Data Preparation
+
+The following section if how I prepared the data off of my github. This will not go in to how i originally went from their data at over 200,000 down to 5,000. The following librarys are required to run.
 
 ```{r}
 library("tidyverse")
