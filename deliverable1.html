@@ -1640,19 +1640,19 @@ summary {
 <hr />
 <div id="data-discovery" class="section level3">
 <h3>Data Discovery</h3>
-<p>The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one catagory of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations.<br />
-In short, I have reduced the observations my project will look at from over 200,000 down to a managable 5,000 reviews for 435 different camera products (This file is hosted as a CSV on my github). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insite as to why Amazon is so popular.</p>
+<p>The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one category of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size, so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations.<br />
+In short, I have reduced the observations my project will look at from over 200,000 down to a manageable 5,000 reviews for 435 different camera products (This file is hosted as a CSV on my GitHub). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insight as to why Amazon is so popular.</p>
 <div id="potential-limitations" class="section level5">
 <h5><strong>Potential Limitations</strong></h5>
 <ul>
-<li>Little customer informaiton
+<li>Little customer information
 <ul>
 <li>No information on age, sex, or other demographic information</li>
 <li>While country is all in the US, no states or cities are listed</li>
 </ul></li>
-<li>Reviews are at customer descression
+<li>Reviews are at customer discretion
 <ul>
-<li>Reviews could be negaive/positive for reasons not stated</li>
+<li>Reviews could be negative/positive for reasons not stated</li>
 <li>Do not know how many reviews each customer has given</li>
 </ul></li>
 <li>Do not know if customer used Prime or not</li>
@@ -1660,13 +1660,19 @@ In short, I have reduced the observations my project will look at from over 200,
 <ul>
 <li>Also do not know if product was returned or kept</li>
 </ul></li>
+<li>Unknown repercussions from artificially shortening my dataset
+<ul>
+<li>As I start to understand the data more, I can return it to its full length</li>
+<li>The size was too large to manipulate the data quickly for early stage planning</li>
+<li>Code is programmed scalable to allow more observations</li>
+</ul></li>
 </ul>
 <hr />
 </div>
 </div>
 <div id="data-preparation" class="section level3">
 <h3>Data Preparation</h3>
-<p>The following section if how I prepared the data off of my github. This will not go in to how I originally went from their data at over 200,000 down to 5,000. The following librarys are required to run.</p>
+<p>The rest of the project will be the data off of my GitHub. This will not go in to how I originally went from their data at over 200,000 down to 5,000 (at some point I plan to return to the original data set). The following libraries are required to run.</p>
 <pre><code>## -- Attaching packages ----------------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
 <pre><code>## v ggplot2 3.2.1     v purrr   0.3.2
 ## v tibble  2.1.3     v dplyr   0.8.3
@@ -1675,7 +1681,7 @@ In short, I have reduced the observations my project will look at from over 200,
 <pre><code>## -- Conflicts -------------------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
-<p>This is the dataset from github. It will store into dataset Amazon_Ratings. This will be the starting point from which I will extract Tidy Data.</p>
+<p>This is the dataset from GitHub. It will store into dataset Amazon_Ratings. This will be the starting point from which I will extract Tidy Data.</p>
 <pre class="r"><code>Amazon_Ratings &lt;- read_csv(&quot;https://raw.githubusercontent.com/NathanLovell/DataScience-Nathan-Lovell/master/5000_Rows.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
@@ -1698,7 +1704,7 @@ In short, I have reduced the observations my project will look at from over 200,
 <div id="variables" class="section level4">
 <h4><strong>Variables</strong></h4>
 <hr />
-<p>These are the original variables provided by Amazon. As you can see we have 15 total tables from marketplace to review_date.</p>
+<p>These are the original variables provided by Amazon. As you can see, we have 15 total tables from marketplace to review_date.</p>
 <pre><code>##  [1] &quot;marketplace&quot;       &quot;customer_id&quot;       &quot;review_id&quot;        
 ##  [4] &quot;product_id&quot;        &quot;product_parent&quot;    &quot;product_title&quot;    
 ##  [7] &quot;product_category&quot;  &quot;star_rating&quot;       &quot;helpful_votes&quot;    
@@ -1730,7 +1736,7 @@ In short, I have reduced the observations my project will look at from over 200,
 </li>
 </ol>
 <ul>
-<li>Double: Number of helpful votes the review recieved</li>
+<li>Double: Number of helpful votes the review received</li>
 </ul>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>total_votes</strong></li>
@@ -1773,7 +1779,7 @@ In short, I have reduced the observations my project will look at from over 200,
 </li>
 </ol>
 <ul>
-<li>Character: A products unique identifier (Will be used to map tables together later on)</li>
+<li>Character: A products unique identifier (Will be used to map tables together later)</li>
 </ul>
 <ol start="3" style="list-style-type: decimal">
 <li><strong>product_parent</strong></li>
@@ -1820,11 +1826,11 @@ Review will store all customer and review information. There will be no informat
 ##  [4] &quot;star_rating&quot;       &quot;helpful_votes&quot;     &quot;total_votes&quot;      
 ##  [7] &quot;vine_verified&quot;     &quot;verified_purchase&quot; &quot;review_title&quot;     
 ## [10] &quot;review_body&quot;       &quot;review_date&quot;</code></pre>
-<p>The Product table will then store all information about the product based on its product_id. If we need information reguarding the product, we can look it up by its id and pull everything we need to know.</p>
+<p>The Product table will then store all information about the product based on its product_id. If we need information regarding the product, we can look it up by its id and pull everything we need to know.</p>
 <pre><code>## [1] &quot;product_id&quot;  &quot;parent_id&quot;   &quot;description&quot; &quot;category&quot;</code></pre>
 <p>Since Product is no longer directly linked to Review, we have multiple listings of the same products. We can remove this redundant information which drops this table from 5,000 entries to 435.</p>
 <pre class="r"><code>Product &lt;- distinct(Product, Product$product_id, .keep_all = TRUE)</code></pre>
-<p>Some of this data is categorical which means each possible response for a given variable can be grouped together. A good example is Review’s star_rating. This variable is ranked on a scale between 1 and 5. Therefore we can say that this variable will have 5 levels (1,2,3,4,5) and each response MUST be one of those. This step will help with data manipulation later on.</p>
+<p>Some of this data is categorical which means each possible response for a given variable can be grouped together. A good example is Review’s star_rating. This variable is ranked on a scale between 1 and 5. Therefore we can say that this variable will have 5 levels (1,2,3,4,5) and each response MUST be one of those. This step will help with data manipulation later.</p>
 <pre class="r"><code>Review$star_rating &lt;- as.factor(Review$star_rating)
 Review$vine_verified &lt;- as.factor(Review$vine_verified)
 Review$verified_purchase &lt;- as.factor(Review$verified_purchase)</code></pre>
@@ -1837,24 +1843,24 @@ Review$verified_purchase &lt;- as.factor(Review$verified_purchase)</code></pre>
 <div id="summary-of-data" class="section level4">
 <h4><strong>Summary of Data</strong></h4>
 <hr />
-<p>One question this data might be able to answer is if having bought the product impacts wheather someone is more likely to give a lower rating.</p>
-<p>Out of all the 1 star ratings:</p>
+<p>One question this data might be able to answer is if having bought the product impacts whether someone is more likely to give a lower rating.</p>
+<p>Out of all the 1-star ratings:</p>
 <pre class="r"><code>sum(Review$star_rating == &quot;1&quot;)</code></pre>
 <pre><code>## [1] 472</code></pre>
-<p>This many 1 star ratings were given by non-purchasers:</p>
+<p>This many 1-star ratings were given by non-purchasers:</p>
 <pre class="r"><code>sum((Review$star_rating == &quot;1&quot;) &amp; (Review$verified_purchase == &quot;N&quot;))</code></pre>
 <pre><code>## [1] 70</code></pre>
-<p>While purchasers gave this many 1 star ratings:</p>
+<p>While purchasers gave this many 1-star ratings:</p>
 <pre class="r"><code>sum((Review$star_rating == &quot;1&quot;) &amp; (Review$verified_purchase == &quot;Y&quot;))</code></pre>
 <pre><code>## [1] 402</code></pre>
-<p>Another question we can ask is wheather a Vine reviewer is more likely to give a higher rating.</p>
-<p>Out of all the 5 star ratings:</p>
+<p>Another question we can ask is whether a vine reviewer is more likely to give a higher rating.</p>
+<p>Out of all the 5-star ratings:</p>
 <pre class="r"><code>sum(Review$star_rating == &quot;5&quot;)</code></pre>
 <pre><code>## [1] 2955</code></pre>
-<p>This many 5 star ratings were given by non-vine reviewers:</p>
+<p>This many 5-star ratings were given by non-vine reviewers:</p>
 <pre class="r"><code>sum((Review$star_rating == &quot;5&quot;) &amp; (Review$vine_verified == &quot;N&quot;))</code></pre>
 <pre><code>## [1] 2940</code></pre>
-<p>While vine reviewers gave this many 5 star ratings:</p>
+<p>While vine reviewers gave this many 5-star ratings:</p>
 <pre class="r"><code>sum((Review$star_rating == &quot;5&quot;) &amp; (Review$vine_verified == &quot;Y&quot;))</code></pre>
 <pre><code>## [1] 15</code></pre>
 <p>While these numbers start to answer our questions, they should not be taken at face value. The differences between verified purchasers and non is quite large.</p>
@@ -1867,11 +1873,17 @@ Review$verified_purchase &lt;- as.factor(Review$verified_purchase)</code></pre>
 <pre><code>## [1] 23</code></pre>
 <pre class="r"><code>sum(Review$vine_verified == &quot;N&quot;)</code></pre>
 <pre><code>## [1] 4977</code></pre>
-<p>This problem can be fixed by using presentages and looking across different ratings but it is important to keep in mind that it is easy to skew data with weighted questions. If instead we had just asked which gave more 1 star reviews, purchasers or non-purchasers, we would have gotten our answer right away. Without looking at the bigger picture however, we cannot see why the answers came out as they did. This is what we must keep in mind while asking research questions.</p>
+<p>This problem can be fixed by using percentages and looking across different ratings, but it is important to keep in mind that it is easy to skew data with weighted questions. If instead we had just asked which gave more 1-star reviews, purchasers or non-purchasers, we would have gotten our answer right away. Without looking at the bigger picture however, we cannot see why the answers came out as they did. This is what we must keep in mind while asking research questions.</p>
 </div>
 <div id="research-questions" class="section level4">
 <h4><strong>Research Questions</strong></h4>
 <hr />
+<p>My project will look to answer questions centered around eCommerce. I hope to answer questions that can potentially help not just companies like Amazon, but everyone who uses reviews as a means of income. It will also give buyers insight as to who and what reviews they can trust.</p>
+<ol style="list-style-type: decimal">
+<li><p>Should venders of online goods allow people who have not purchased an item leave a review of that item?</p></li>
+<li><p>Are verified reviewers more critical of the items they review leading to biased reviews?</p></li>
+<li><p>In what ways can the length of a review act as a placebo to gaining more information about review ratings?</p></li>
+</ol>
 </div>
 </div>
 

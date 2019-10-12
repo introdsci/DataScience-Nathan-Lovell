@@ -8,27 +8,31 @@ output:
 ***
 
 ### Data Discovery
-  The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one catagory of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations.  
-  In short, I have reduced the observations my project will look at from over 200,000 down to a managable 5,000 reviews for 435 different camera products (This file is hosted as a CSV on my github). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insite as to why Amazon is so popular.  
+  The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one category of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size, so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations.  
+  In short, I have reduced the observations my project will look at from over 200,000 down to a manageable 5,000 reviews for 435 different camera products (This file is hosted as a CSV on my GitHub). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insight as to why Amazon is so popular.  
   
 
 
 ##### **Potential Limitations**
-* Little customer informaiton  
+* Little customer information  
   + No information on age, sex, or other demographic information
   + While country is all in the US, no states or cities are listed
-* Reviews are at customer descression
-  + Reviews could be negaive/positive for reasons not stated
+* Reviews are at customer discretion
+  + Reviews could be negative/positive for reasons not stated
   + Do not know how many reviews each customer has given
 * Do not know if customer used Prime or not
 * Do not know if purchased as a gift or for personal use
   + Also do not know if product was returned or kept
+* Unknown repercussions from artificially shortening my dataset
+  + As I start to understand the data more, I can return it to its full length
+  + The size was too large to manipulate the data quickly for early stage planning
+  + Code is programmed scalable to allow more observations
 
 ***
 
 ### Data Preparation
 
-The following section if how I prepared the data off of my github. This will not go in to how I originally went from their data at over 200,000 down to 5,000. The following librarys are required to run.
+The rest of the project will be the data off of my GitHub. This will not go in to how I originally went from their data at over 200,000 down to 5,000 (at some point I plan to return to the original data set). The following libraries are required to run.
 
 ```{r echo=FALSE}
 library("tidyverse")
@@ -38,7 +42,7 @@ library("readr")
 library("ggplot2")
 ```
 
-This is the dataset from github. It will store into dataset Amazon_Ratings. This will be the starting point from which I will extract Tidy Data.
+This is the dataset from GitHub. It will store into dataset Amazon_Ratings. This will be the starting point from which I will extract Tidy Data.
 ```{r}
 Amazon_Ratings <- read_csv("https://raw.githubusercontent.com/NathanLovell/DataScience-Nathan-Lovell/master/5000_Rows.csv")
 ```
@@ -47,7 +51,7 @@ Amazon_Ratings <- read_csv("https://raw.githubusercontent.com/NathanLovell/DataS
 #### **Variables**
 ***
   
-These are the original variables provided by Amazon. As you can see we have 15 total tables from marketplace to review_date.  
+These are the original variables provided by Amazon. As you can see, we have 15 total tables from marketplace to review_date.  
 ```{r echo=FALSE}
 colnames(Amazon_Ratings)
 ```
@@ -59,7 +63,7 @@ colnames(Amazon_Ratings)
 3. **product_title** 
   + Character: A quick description given to the product by its seller
 4. **helpful_votes**  
-  + Double: Number of helpful votes the review recieved
+  + Double: Number of helpful votes the review received
 5. **total_votes** 
   + Double: Total number of helpful and non-helpful votes the review recieved
 6. **review_headline**  
@@ -73,7 +77,7 @@ colnames(Amazon_Ratings)
 1. **marketplace**  
   + Character: This is the country from where the review was left (All data is from the US)
 2. **product_id**  
-  + Character: A products unique identifier (Will be used to map tables together later on)
+  + Character: A products unique identifier (Will be used to map tables together later)
 3. **product_parent**
   + Double: base product before color or materials are chosen (t-shirt is parent product of both blue and red t-shirts)
 4. **product_category**  
@@ -105,7 +109,7 @@ review_date=Amazon_Ratings$review_date)
 colnames(Review)
 ```
   
-The Product table will then store all information about the product based on its product_id. If we need information reguarding the product, we can look it up by its id and pull everything we need to know.  
+The Product table will then store all information about the product based on its product_id. If we need information regarding the product, we can look it up by its id and pull everything we need to know.  
   
 ```{r echo=FALSE}
 Product <- tibble(
@@ -123,7 +127,7 @@ Product <- distinct(Product, Product$product_id, .keep_all = TRUE)
   
 
   
-Some of this data is categorical which means each possible response for a given variable can be grouped together. A good example is Review's star_rating. This variable is ranked on a scale between 1 and 5. Therefore we can say that this variable will have 5 levels (1,2,3,4,5) and each response MUST be one of those. This step will help with data manipulation later on.
+Some of this data is categorical which means each possible response for a given variable can be grouped together. A good example is Review's star_rating. This variable is ranked on a scale between 1 and 5. Therefore we can say that this variable will have 5 levels (1,2,3,4,5) and each response MUST be one of those. This step will help with data manipulation later.
 
 ```{r}
 Review$star_rating <- as.factor(Review$star_rating)
@@ -139,32 +143,32 @@ Now that the data is Tidy and has been prepared for manipulations, it is time to
 #### **Summary of Data**
 ***
 
-One question this data might be able to answer is if having bought the product impacts wheather someone is more likely to give a lower rating.  
+One question this data might be able to answer is if having bought the product impacts whether someone is more likely to give a lower rating.  
   
-Out of all the 1 star ratings:
+Out of all the 1-star ratings:
 ```{r}
 sum(Review$star_rating == "1")
 ```
-This many 1 star ratings were given by non-purchasers:
+This many 1-star ratings were given by non-purchasers:
 ```{r}
 sum((Review$star_rating == "1") & (Review$verified_purchase == "N"))
 ```
-While purchasers gave this many 1 star ratings:
+While purchasers gave this many 1-star ratings:
 ```{r}
 sum((Review$star_rating == "1") & (Review$verified_purchase == "Y"))
 ```
 
-Another question we can ask is wheather a Vine reviewer is more likely to give a higher rating.
+Another question we can ask is whether a vine reviewer is more likely to give a higher rating.
   
-Out of all the 5 star ratings:
+Out of all the 5-star ratings:
 ```{r}
 sum(Review$star_rating == "5")
 ```
-This many 5 star ratings were given by non-vine reviewers:
+This many 5-star ratings were given by non-vine reviewers:
 ```{r}
 sum((Review$star_rating == "5") & (Review$vine_verified == "N"))
 ```
-While vine reviewers gave this many 5 star ratings:
+While vine reviewers gave this many 5-star ratings:
 ```{r}
 sum((Review$star_rating == "5") & (Review$vine_verified == "Y"))
 ```
@@ -180,9 +184,18 @@ sum(Review$vine_verified == "Y")
 sum(Review$vine_verified == "N")
 ```
 
-This problem can be fixed by using presentages and looking across different ratings but it is important to keep in mind that it is easy to skew data with weighted questions. If instead we had just asked which gave more 1 star reviews, purchasers or non-purchasers, we would have gotten our answer right away. Without looking at the bigger picture however, we cannot see why the answers came out as they did. This is what we must keep in mind while asking research questions.
+This problem can be fixed by using percentages and looking across different ratings, but it is important to keep in mind that it is easy to skew data with weighted questions. If instead we had just asked which gave more 1-star reviews, purchasers or non-purchasers, we would have gotten our answer right away. Without looking at the bigger picture however, we cannot see why the answers came out as they did. This is what we must keep in mind while asking research questions.
 
 #### **Research Questions**
 
 ***
+
+My project will look to answer questions centered around eCommerce. I hope to answer questions that can potentially help not just companies like Amazon, but everyone who uses reviews as a means of income. It will also give buyers insight as to who and what reviews they can trust.
+
+1. Should venders of online goods allow people who have not purchased an item leave a review of that item?
+
+2. Are verified reviewers more critical of the items they review leading to biased reviews?
+
+3. In what ways can the length of a review act as a placebo to gaining more information about review ratings?
+
 
