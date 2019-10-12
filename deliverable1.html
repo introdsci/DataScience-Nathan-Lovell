@@ -1641,7 +1641,7 @@ summary {
 <div id="data-discovery" class="section level3">
 <h3>Data Discovery</h3>
 <p>The data that I will be using for my Portfolio Project is provided by Amazon. Their datasets are hosted on AWS for anyone to download. With how many products Amazon sells, observations from any one catagory of products is out of the scope of this class. I chose the camera category but still needed to cut down on my sample size so I took Amazons original CSV file, sorted it by each products parent_id and then pulled the first 5000 observations.<br />
-In short, I have reduced the observations my project will look at from over 200,000 down to a managable 5000 reviews for 435 different camera products (This file is hosted as a CSV on my github). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insite as to why Amazon is so popular.</p>
+In short, I have reduced the observations my project will look at from over 200,000 down to a managable 5,000 reviews for 435 different camera products (This file is hosted as a CSV on my github). I have always been curious of big data and other than Google, Amazon seems to store a ton of data. While my work will not be able to look at it all, reviewing a small portion of Amazons store reviews will hopefully give insite as to why Amazon is so popular.</p>
 <hr />
 <div id="potential-limitations" class="section level5">
 <h5><strong>Potential Limitations</strong></h5>
@@ -1667,8 +1667,7 @@ In short, I have reduced the observations my project will look at from over 200,
 </div>
 <div id="data-preparation" class="section level3">
 <h3>Data Preparation</h3>
-<p>Start of the Project install packages</p>
-<pre class="r"><code>library(&quot;tidyverse&quot;)</code></pre>
+<p>The following section if how I prepared the data off of my github. This will not go in to how I originally went from their data at over 200,000 down to 5,000. The following librarys are required to run.</p>
 <pre><code>## -- Attaching packages ----------------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
 <pre><code>## v ggplot2 3.2.1     v purrr   0.3.2
 ## v tibble  2.1.3     v dplyr   0.8.3
@@ -1677,11 +1676,7 @@ In short, I have reduced the observations my project will look at from over 200,
 <pre><code>## -- Conflicts -------------------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(&quot;dplyr&quot;)
-library(&quot;tidyr&quot;)
-library(&quot;readr&quot;)
-library(&quot;ggplot2&quot;)</code></pre>
-<p>add the dataset</p>
+<p>This is the dataset from github. It will store into dataset Amazon_Ratings. This will be the starting point from which I will extract Tidy Data.</p>
 <pre class="r"><code>Amazon_Ratings &lt;- read_csv(&quot;https://raw.githubusercontent.com/NathanLovell/DataScience-Nathan-Lovell/master/5000_Rows.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
@@ -1701,29 +1696,153 @@ library(&quot;ggplot2&quot;)</code></pre>
 ##   review_body = col_character(),
 ##   review_date = col_character()
 ## )</code></pre>
-<p>rename columns</p>
-<pre class="r"><code>#colnames(Amazon_Ratings)[colnames(Amazon_Ratings) == &quot;vine&quot;] &lt;- &quot;vine_verified&quot;
-colnames(Amazon_Ratings)</code></pre>
+<div id="variables" class="section level4">
+<h4><strong>Variables</strong></h4>
+<hr />
+<p>These are the original variables provided by Amazon. As you can see we have 15 total tables from marketplace to review_date.</p>
 <pre><code>##  [1] &quot;marketplace&quot;       &quot;customer_id&quot;       &quot;review_id&quot;        
 ##  [4] &quot;product_id&quot;        &quot;product_parent&quot;    &quot;product_title&quot;    
 ##  [7] &quot;product_category&quot;  &quot;star_rating&quot;       &quot;helpful_votes&quot;    
 ## [10] &quot;total_votes&quot;       &quot;vine&quot;              &quot;verified_purchase&quot;
 ## [13] &quot;review_headline&quot;   &quot;review_body&quot;       &quot;review_date&quot;</code></pre>
-<p>create additional tables as needed</p>
-<pre class="r"><code>Review &lt;- tibble(review_id=Amazon_Ratings$review_id, customer_id=Amazon_Ratings$customer_id, product_id=Amazon_Ratings$product_id, star_rating=Amazon_Ratings$star_rating, helpful_votes=Amazon_Ratings$helpful_votes, total_votes=Amazon_Ratings$total_votes, vine_verified=Amazon_Ratings$vine, verified_purchase=Amazon_Ratings$verified_purchase, review_title=Amazon_Ratings$review_headline, review_body=Amazon_Ratings$review_body, review_date=Amazon_Ratings$review_date)
-Product &lt;- tibble(product_id=Amazon_Ratings$product_id, parent_id=Amazon_Ratings$product_parent, description=Amazon_Ratings$product_title, category=Amazon_Ratings$product_category)
+<div id="continuous-data" class="section level5">
+<h5><strong>Continuous Data</strong></h5>
+<ol style="list-style-type: decimal">
+<li><strong>customer_id</strong></li>
+</ol>
+<ul>
+<li>Double: Unique customer identifier to tell one customer review from another</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>review_id</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: Unique review identifier to tell one review from another</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>product_title</strong></li>
+</ol>
+<ul>
+<li>Character: A quick description given to the product by its seller</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>helpful_votes</strong><br />
+</li>
+</ol>
+<ul>
+<li>Double: Number of helpful votes the review recieved</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>total_votes</strong></li>
+</ol>
+<ul>
+<li>Double: Total number of helpful and non-helpful votes the review recieved</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li><strong>review_headline</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: Title of the review given to the review by the customer</li>
+</ul>
+<ol start="7" style="list-style-type: decimal">
+<li><strong>review_body</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: The contents of the review by the customer</li>
+</ul>
+<ol start="8" style="list-style-type: decimal">
+<li><strong>review_date</strong></li>
+</ol>
+<ul>
+<li>Character: The month/day/year the review was left</li>
+</ul>
+</div>
+<div id="categorical-data" class="section level5">
+<h5><strong>Categorical Data</strong></h5>
+<ol style="list-style-type: decimal">
+<li><strong>marketplace</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: This is the country from where the review was left (All data is from the US)</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>product_id</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: A products unique identifier (Will be used to map tables together later on)</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>product_parent</strong></li>
+</ol>
+<ul>
+<li>Double: base product before color or materials are chosen (t-shirt is parent product of both blue and red t-shirts)</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>product_category</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: What category the product falls under (Will all be camera for this dataset)</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>star_rating</strong><br />
+</li>
+</ol>
+<ul>
+<li>Double: The rating between 1-5 that the customer reviewed the product at</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li><strong>vine</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: Whether the customer was Vine reviewer (Y/N)</li>
+</ul>
+<ol start="7" style="list-style-type: decimal">
+<li><strong>verified_purchase</strong><br />
+</li>
+</ol>
+<ul>
+<li>Character: Whether the customer bought the item or not (Y/N)</li>
+</ul>
+</div>
+</div>
+<div id="organization" class="section level4">
+<h4><strong>Organization</strong></h4>
+<hr />
+<p>Now that we have a good understanding of what this dataset contains, it is time to organize the data. I will be splitting the dataset into two tables; Review and Product.<br />
+Review will store all customer and review information. There will be no information about what product is being reviews other than its unique identifier.<br />
+The Product table will then store all information about the product based on its product_id. If we need information reguarding the product, we can look it up by its id and pull everything we need to know.</p>
+<pre class="r"><code>Review &lt;- tibble(
+review_id=Amazon_Ratings$review_id, customer_id=Amazon_Ratings$customer_id, 
+product_id=Amazon_Ratings$product_id, star_rating=Amazon_Ratings$star_rating,
+helpful_votes=Amazon_Ratings$helpful_votes, total_votes=Amazon_Ratings$total_votes, 
+vine_verified=Amazon_Ratings$vine, verified_purchase=Amazon_Ratings$verified_purchase, 
+review_title=Amazon_Ratings$review_headline, review_body=Amazon_Ratings$review_body, 
+review_date=Amazon_Ratings$review_date)
 
 colnames(Review)</code></pre>
 <pre><code>##  [1] &quot;review_id&quot;         &quot;customer_id&quot;       &quot;product_id&quot;       
 ##  [4] &quot;star_rating&quot;       &quot;helpful_votes&quot;     &quot;total_votes&quot;      
 ##  [7] &quot;vine_verified&quot;     &quot;verified_purchase&quot; &quot;review_title&quot;     
 ## [10] &quot;review_body&quot;       &quot;review_date&quot;</code></pre>
-<pre class="r"><code>colnames(Product)</code></pre>
+<hr />
+<pre class="r"><code>Product &lt;- tibble(
+product_id=Amazon_Ratings$product_id, parent_id=Amazon_Ratings$product_parent, 
+description=Amazon_Ratings$product_title, category=Amazon_Ratings$product_category)
+
+colnames(Product)</code></pre>
 <pre><code>## [1] &quot;product_id&quot;  &quot;parent_id&quot;   &quot;description&quot; &quot;category&quot;</code></pre>
 <p>remove duplicate products based on product id</p>
 <pre class="r"><code>Product &lt;- distinct(Product, Product$product_id, .keep_all = TRUE)</code></pre>
 <p>columns to factors</p>
 <p>visualizations and connections</p>
+</div>
 </div>
 
 

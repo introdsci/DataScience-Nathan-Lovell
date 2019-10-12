@@ -28,42 +28,93 @@ output:
 
 ### Data Preparation
 
-The following section if how I prepared the data off of my github. This will not go in to how i originally went from their data at over 200,000 down to 5,000. The following librarys are required to run.
+The following section if how I prepared the data off of my github. This will not go in to how I originally went from their data at over 200,000 down to 5,000. The following librarys are required to run.
 
-```{r}
+```{r echo=FALSE}
 library("tidyverse")
 library("dplyr")
 library("tidyr")
 library("readr")
 library("ggplot2")
-
 ```
 
-add the dataset
+This is the dataset from github. It will store into dataset Amazon_Ratings. This will be the starting point from which I will extract Tidy Data.
 ```{r}
 Amazon_Ratings <- read_csv("https://raw.githubusercontent.com/NathanLovell/DataScience-Nathan-Lovell/master/5000_Rows.csv")
 ```
-
-rename columns
-```{r}
-#colnames(Amazon_Ratings)[colnames(Amazon_Ratings) == "vine"] <- "vine_verified"
+  
+  
+#### **Variables**
+***
+  
+These are the original variables provided by Amazon. As you can see we have 15 total tables from marketplace to review_date.  
+```{r echo=FALSE}
 colnames(Amazon_Ratings)
-
 ```
+##### **Continuous Data**
+1. **customer_id**
+  + Double: Unique customer identifier to tell one customer review from another
+2. **review_id**  
+  + Character: Unique review identifier to tell one review from another 
+3. **product_title** 
+  + Character: A quick description given to the product by its seller
+4. **helpful_votes**  
+  + Double: Number of helpful votes the review recieved
+5. **total_votes** 
+  + Double: Total number of helpful and non-helpful votes the review recieved
+6. **review_headline**  
+  + Character: Title of the review given to the review by the customer
+7. **review_body**  
+  + Character: The contents of the review by the customer
+8. **review_date** 
+  + Character: The month/day/year the review was left  
 
-
-
-
-create additional tables as needed
+##### **Categorical Data**
+1. **marketplace**  
+  + Character: This is the country from where the review was left (All data is from the US)
+2. **product_id**  
+  + Character: A products unique identifier (Will be used to map tables together later on)
+3. **product_parent**
+  + Double: base product before color or materials are chosen (t-shirt is parent product of both blue and red t-shirts)
+4. **product_category**  
+  + Character: What category the product falls under (Will all be camera for this dataset)
+5. **star_rating**  
+  + Double: The rating between 1-5 that the customer reviewed the product at
+6. **vine**  
+  + Character: Whether the customer was Vine reviewer (Y/N)
+7. **verified_purchase**  
+  + Character: Whether the customer bought the item or not (Y/N)
+  
+  
+#### **Organization**
+  
+***
+  
+Now that we have a good understanding of what this dataset contains, it is time to organize the data. I will be splitting the dataset into two tables; Review and Product.  
+Review will store all customer and review information. There will be no information about what product is being reviews other than its unique identifier.  
+The Product table will then store all information about the product based on its product_id. If we need information reguarding the product, we can look it up by its id and pull everything we need to know.  
 
 ```{r}
-Review <- tibble(review_id=Amazon_Ratings$review_id, customer_id=Amazon_Ratings$customer_id, product_id=Amazon_Ratings$product_id, star_rating=Amazon_Ratings$star_rating, helpful_votes=Amazon_Ratings$helpful_votes, total_votes=Amazon_Ratings$total_votes, vine_verified=Amazon_Ratings$vine, verified_purchase=Amazon_Ratings$verified_purchase, review_title=Amazon_Ratings$review_headline, review_body=Amazon_Ratings$review_body, review_date=Amazon_Ratings$review_date)
-Product <- tibble(product_id=Amazon_Ratings$product_id, parent_id=Amazon_Ratings$product_parent, description=Amazon_Ratings$product_title, category=Amazon_Ratings$product_category)
+Review <- tibble(
+review_id=Amazon_Ratings$review_id, customer_id=Amazon_Ratings$customer_id, 
+product_id=Amazon_Ratings$product_id, star_rating=Amazon_Ratings$star_rating,
+helpful_votes=Amazon_Ratings$helpful_votes, total_votes=Amazon_Ratings$total_votes, 
+vine_verified=Amazon_Ratings$vine, verified_purchase=Amazon_Ratings$verified_purchase, 
+review_title=Amazon_Ratings$review_headline, review_body=Amazon_Ratings$review_body, 
+review_date=Amazon_Ratings$review_date)
 
 colnames(Review)
+```
+  
+***
+  
+```{r}
+Product <- tibble(
+product_id=Amazon_Ratings$product_id, parent_id=Amazon_Ratings$product_parent, 
+description=Amazon_Ratings$product_title, category=Amazon_Ratings$product_category)
+
 colnames(Product)
 ```
-
 
 remove duplicate products based on product id
 
